@@ -21,7 +21,6 @@ ChatNCode is a **real-time collaborative coding and chat platform** that combine
 
 ## 🖼️ Preview
 
-![ChatNCode Screenshot](https://via.placeholder.com/800x400)  
 ![image](https://github.com/user-attachments/assets/4d6cd623-b2e6-4c35-8770-44566bdf5497)
 ![image](https://github.com/user-attachments/assets/d1ddbc39-3207-4cd6-afc7-a76363ed528f)
 ![image](https://github.com/user-attachments/assets/458309fa-b165-4488-b41f-de007c26d480)
