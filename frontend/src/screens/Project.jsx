@@ -12,14 +12,21 @@ import Markdown from "markdown-to-jsx";
 import hljs from "highlight.js";
 import { getWebContainer } from "../config/webcontainer";
 
-/* A code-highlighting component */
+// Typing indicator component
+const TypingIndicator = () => (
+  <div className="flex gap-1">
+    <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></span>
+    <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-150"></span>
+    <span className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-300"></span>
+  </div>
+);
+
 function SyntaxHighlightedCode(props) {
   const ref = useRef(null);
 
   useEffect(() => {
     if (ref.current && props.className?.includes("lang-") && window.hljs) {
       window.hljs.highlightElement(ref.current);
-      // hljs won't reprocess the element unless this attribute is removed
       ref.current.removeAttribute("data-highlighted");
     }
   }, [props.className, props.children]);
@@ -37,6 +44,7 @@ const Project = () => {
   const [project, setProject] = useState(location.state.project);
 
   // Chat message + state
+  const [isTyping, setIsTyping] = useState(false); // State for typing indicator
   const [message, setMessage] = useState("");
   const messageBox = useRef(null);
   const [messages, setMessages] = useState([]);
@@ -54,7 +62,7 @@ const Project = () => {
   const [loading, setLoading] = useState(false);
   const [users, setUsers] = useState([]);
 
-  /* Handle adding a collaborator to the project */
+  // Handle adding a collaborator to the project
   function addCollaborators() {
     axios
       .put("/projects/add-user", {
@@ -70,9 +78,10 @@ const Project = () => {
       });
   }
 
-  /* Send a chat message */
+  // Send a chat message
   const send = () => {
     if (!message.trim()) return;
+    setIsTyping(true); // Start typing indicator before AI responds
     sendMessage("project-message", {
       message,
       sender: user,
@@ -81,7 +90,7 @@ const Project = () => {
     setMessage("");
   };
 
-  /* Convert AI JSON message to an interactive block */
+  // Convert AI JSON message to an interactive block
   function WriteAiMessage(message) {
     const messageObject = JSON.parse(message);
     return (
@@ -98,7 +107,7 @@ const Project = () => {
     );
   }
 
-  /* When selecting a user from the side panel */
+  // When selecting a user from the side panel
   const handleUserClick = (id) => {
     setSelectedUserId((prev) => {
       const newSelected = new Set(prev);
@@ -111,7 +120,7 @@ const Project = () => {
     });
   };
 
-  /* Fetch data + set up socket once the component mounts */
+  // Fetch data + set up socket once the component mounts
   useEffect(() => {
     setLoading(true);
     initializeSocket(project._id);
@@ -135,6 +144,7 @@ const Project = () => {
         }
         setFileTree(aiMsg.fileTree || {});
         setMessages((prevMessages) => [...prevMessages, data]);
+        setIsTyping(false); // Stop typing indicator when AI responds
       } else {
         setMessages((prevMessages) => [...prevMessages, data]);
       }
@@ -173,7 +183,7 @@ const Project = () => {
     };
   }, [location.state.project._id, webContainer]);
 
-  /* Save updated file tree to DB */
+  // Save updated file tree to DB
   function saveFileTree(ft) {
     axios
       .put("/projects/update-file-tree", {
@@ -188,7 +198,7 @@ const Project = () => {
       });
   }
 
-  /* Scroll chat to bottom */
+  // Scroll chat to bottom
   function scrollToBottom() {
     if (messageBox.current) {
       messageBox.current.scrollTop = messageBox.current.scrollHeight;
@@ -230,9 +240,7 @@ const Project = () => {
                   msg.sender._id === "ai"
                     ? "max-w-lg"
                     : "max-w-sm"
-                } ${
-                  msg.sender._id === user._id.toString() ? "ml-auto" : ""
-                } message flex flex-col p-2 bg-slate-700 w-fit rounded-md shadow-sm`}
+                } ${msg.sender._id === user._id.toString() ? "ml-auto" : ""} message flex flex-col p-2 bg-slate-700 w-fit rounded-md shadow-sm`}
               >
                 <small className="opacity-70 text-xs mb-1">
                   {msg.sender.email}
@@ -247,6 +255,14 @@ const Project = () => {
               </div>
             ))}
           </div>
+
+          {/* Typing Indicator */}
+          {isTyping && (
+            <div className="flex items-center gap-2">
+              <TypingIndicator />
+              <span>AI is typing...</span>
+            </div>
+          )}
 
           {/* Input field */}
           <div className="absolute bottom-0 left-0 w-full flex">
@@ -418,7 +434,7 @@ const Project = () => {
             )}
           </div>
 
-          {/* Preview Iframe */}
+          {/* Preview */}
           {iframeUrl && webContainer && (
             <div className="w-1/2 border-l border-slate-300 bg-white flex flex-col">
               <div className="p-2 bg-slate-100 border-b border-slate-200">

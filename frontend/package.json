@@ -12,6 +12,7 @@
   "dependencies": {
     "@webcontainer/api": "^1.5.1-internal.6",
     "axios": "^1.7.9",
+    "balanced-match": "^3.0.1",
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.471.0",
     "markdown": "^0.5.0",

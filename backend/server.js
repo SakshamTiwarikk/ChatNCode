@@ -20,50 +20,40 @@ const io = new Server(server, {
 
 
 io.use(async (socket, next) => {
+
     try {
-        const token = socket.handshake.auth?.token || socket.handshake.headers.authorization?.split(" ")[1];
+
+        const token = socket.handshake.auth?.token || socket.handshake.headers.authorization?.split(' ')[ 1 ];
         const projectId = socket.handshake.query.projectId;
 
-        console.log("Received token:", token); // Debug token
-        console.log("Received projectId:", projectId); // Debug projectId
-
-        if (!projectId) {
-            console.error("Missing projectId in query");
-            return next(new Error("Missing projectId"));
-        }
-
         if (!mongoose.Types.ObjectId.isValid(projectId)) {
-            console.error("Invalid projectId format");
-            return next(new Error("Invalid projectId"));
+            return next(new Error('Invalid projectId'));
         }
 
-        const project = await projectModel.findById(projectId);
-        if (!project) {
-            console.error("Project not found in database");
-            return next(new Error("Project not found"));
-        }
 
-        socket.project = project;
+        socket.project = await projectModel.findById(projectId);
+
 
         if (!token) {
-            console.error("Missing token");
-            return next(new Error("Authentication error: Missing token"));
+            return next(new Error('Authentication error'))
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
         if (!decoded) {
-            console.error("Invalid token");
-            return next(new Error("Authentication error: Invalid token"));
+            return next(new Error('Authentication error'))
         }
 
-        socket.user = decoded;
-        next();
-    } catch (error) {
-        console.error("Middleware error:", error.message);
-        next(new Error("Internal server error"));
-    }
-});
 
+        socket.user = decoded;
+
+        next();
+
+    } catch (error) {
+        next(error)
+    }
+
+})
 
 
 io.on('connection', socket => {
