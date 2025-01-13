@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "type": "module",
-"scripts": {
-  "build": "echo \"No build step needed\"",
-  "start": "node index.js",
-  "test": "echo \"Error: no test specified\" && exit 1"
-},
-
+  "scripts": {
+    "build": "echo \"No build step needed\"",
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,6 +15,7 @@
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
