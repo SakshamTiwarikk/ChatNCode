@@ -10,7 +10,7 @@ import {
 } from "../config/socket.js";
 import Markdown from "markdown-to-jsx";
 import hljs from "highlight.js";
-import { getWebContainer } from "../config/webcontainer";
+import { getWebContainer } from "../config/webContainer.js";
 
 // Typing indicator component
 const TypingIndicator = () => (
